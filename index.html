@@ -944,7 +944,6 @@ document.getElementById('devisForm').addEventListener('submit', async function(e
     await fetch(POWER_AUTOMATE_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
