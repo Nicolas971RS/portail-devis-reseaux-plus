@@ -941,13 +941,14 @@ document.getElementById('devisForm').addEventListener('submit', async function(e
       return;
     }
 
-    const resp = await fetch(POWER_AUTOMATE_URL, {
+    await fetch(POWER_AUTOMATE_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
-    if (!resp.ok) throw new Error('Erreur HTTP ' + resp.status);
+    // no-cors = on ne peut pas lire la réponse mais la requête est envoyée
     showSuccess(payload);
 
   } catch (err) {
