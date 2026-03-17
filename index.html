@@ -727,55 +727,50 @@ async function loadCatalogue() {
     });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
-    
+
     if (!Array.isArray(data) || data.length === 0) {
-      throw new Error('Données vides ou format inattendu');
+      throw new Error('Données vides');
     }
 
-    // Log pour détecter les vrais noms de colonnes
-    console.log('🔍 Colonnes disponibles:', Object.keys(data[0]).join(', '));
+    console.log('🔍 Exemple article:', JSON.stringify(data[0]));
 
+    // Mapping colonnes SharePoint internes
+    // Title = Référence, D_x00e9_signation ou field_2 = Désignation
+    // Cat_x00e9_gorie ou field_4 = Catégorie, Unit_x00e9_ ou field_5 = Unité
     CATALOGUE = data.map(item => {
-      const keys = Object.keys(item);
-      // Désignation
-      const desKey = keys.find(k => /d.signation/i.test(k) || k === 'D_x00e9_signation') || 'Title';
-      // Unité  
-      const uniKey = keys.find(k => /unit/i.test(k) && k !== 'Title') || '';
-      // Catégorie
-      const catKey = keys.find(k => /cat.gorie/i.test(k) || /cat_x/i.test(k)) || '';
-
-      return {
-        ref: item.Title || '',
-        label: item[desKey] || item.Title || '',
-        unite: (uniKey && item[uniKey]) ? String(item[uniKey]) : 'u',
-        categorie: (catKey && item[catKey]) ? item[catKey] : 'Divers'
-      };
+      const ref = item.Title || '';
+      const label = item.D_x00e9_signation || item['Désignation'] || item.field_2 || ref;
+      const categorie = item.Cat_x00e9_gorie || item['Catégorie'] || item.field_4 || 'Divers';
+      const unite = item.Unit_x00e9_ || item['Unité'] || item.field_5 || 'u';
+      return { ref, label, categorie: String(categorie), unite: String(unite) };
     }).filter(item => item.ref && item.label);
 
     CATALOGUE.sort((a, b) => {
-      const catCmp = a.categorie.localeCompare(b.categorie);
-      return catCmp !== 0 ? catCmp : a.label.localeCompare(b.label);
+      const c = a.categorie.localeCompare(b.categorie);
+      return c !== 0 ? c : a.label.localeCompare(b.label);
     });
 
-    document.querySelectorAll('.article-select').forEach(sel => {
-      const v = sel.value;
-      updateSelectOptions(sel);
-      sel.value = v;
-    });
-
+    refreshAllSelects();
     console.log('✅ Catalogue chargé : ' + CATALOGUE.length + ' articles');
 
   } catch (err) {
     console.error('❌ Erreur catalogue:', err.message);
-    // Fallback — quelques articles de base
     CATALOGUE = [
       { ref: "HAU016", label: "ACO MULTIDRAIN 100 BP A PENTE N1", unite: "u", categorie: "FONTE DE VOIRIE" },
       { ref: "HAU017", label: "ACO MULTIDRAIN 200 BP", unite: "u", categorie: "FONTE DE VOIRIE" },
       { ref: "HAU018", label: "ACO MULTIDRAIN 200 BP S/P", unite: "u", categorie: "FONTE DE VOIRIE" },
     ];
-    console.warn('⚠️ Mode hors ligne — catalogue de secours activé (3 articles)');
-    document.querySelectorAll('.article-select').forEach(sel => updateSelectOptions(sel));
+    console.warn('⚠️ Mode hors ligne activé');
+    refreshAllSelects();
   }
+}
+
+function refreshAllSelects() {
+  document.querySelectorAll('.article-select').forEach(sel => {
+    const v = sel.value;
+    updateSelectOptions(sel);
+    sel.value = v;
+  });
 }
 
 // Charger le catalogue au démarrage
