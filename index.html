@@ -55,7 +55,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    filter: brightness(0) invert(1);
+    filter: none; background: white; padding: 3px 8px; border-radius: 6px;
   }
   .logo-icon {
     width: 44px; height: 44px;
@@ -944,6 +944,7 @@ document.getElementById('devisForm').addEventListener('submit', async function(e
     await fetch(POWER_AUTOMATE_URL, {
       method: 'POST',
       mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload)
     });
 
