@@ -734,15 +734,14 @@ async function loadCatalogue() {
 
     console.log('🔍 Exemple article:', JSON.stringify(data[0]));
 
-    // Mapping colonnes SharePoint internes
-    // Title = Référence, D_x00e9_signation ou field_2 = Désignation
-    // Cat_x00e9_gorie ou field_4 = Catégorie, Unit_x00e9_ ou field_5 = Unité
+    // Mapping colonnes SharePoint confirmé via console
+    // Title=Référence, field_1=Désignation, field_3=Catégorie, field_5=Unité
     CATALOGUE = data.map(item => {
       const ref = item.Title || '';
-      const label = item.D_x00e9_signation || item['Désignation'] || item.field_2 || ref;
-      const categorie = item.Cat_x00e9_gorie || item['Catégorie'] || item.field_4 || 'Divers';
-      const unite = item.Unit_x00e9_ || item['Unité'] || item.field_5 || 'u';
-      return { ref, label, categorie: String(categorie), unite: String(unite) };
+      const label = item.field_1 || item.D_x00e9_signation || ref;
+      const categorie = item.field_3 || item.Cat_x00e9_gorie || 'Divers';
+      const unite = item.field_5 || item.Unit_x00e9_ || 'u';
+      return { ref, label, categorie: String(categorie || 'Divers'), unite: String(unite || 'u') };
     }).filter(item => item.ref && item.label);
 
     CATALOGUE.sort((a, b) => {
