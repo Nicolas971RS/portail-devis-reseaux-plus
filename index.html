@@ -719,91 +719,67 @@ const CATALOGUE_URL = "https://defaultd441528bbc7746368d248ac9d38aed.63.environm
 let CATALOGUE = [];
 
 async function loadCatalogue() {
-  const selectEl = document.querySelectorAll('.article-select');
+  console.log('📡 Chargement catalogue SharePoint...');
   try {
     const resp = await fetch(CATALOGUE_URL, {
       method: 'GET',
-      mode: 'cors'
+      headers: { 'Accept': 'application/json' }
     });
-    if (!resp.ok) throw new Error('Erreur chargement catalogue');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
-    CATALOGUE = data.map(item => ({
-      ref: item.Title || '',
-      label: item.D_x00e9_signation || item.Désignation || item.Title || '',
-      unite: item.Unit_x00e9_ || item.Unité || 'u',
-      categorie: item.Cat_x00e9_gorie || item.Catégorie || ''
-    })).filter(item => item.ref && item.label);
     
-    // Trier par catégorie puis par label
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new Error('Données vides ou format inattendu');
+    }
+
+    // Log pour détecter les vrais noms de colonnes
+    console.log('🔍 Colonnes disponibles:', Object.keys(data[0]).join(', '));
+
+    CATALOGUE = data.map(item => {
+      const keys = Object.keys(item);
+      // Désignation
+      const desKey = keys.find(k => /d.signation/i.test(k) || k === 'D_x00e9_signation') || 'Title';
+      // Unité  
+      const uniKey = keys.find(k => /unit/i.test(k) && k !== 'Title') || '';
+      // Catégorie
+      const catKey = keys.find(k => /cat.gorie/i.test(k) || /cat_x/i.test(k)) || '';
+
+      return {
+        ref: item.Title || '',
+        label: item[desKey] || item.Title || '',
+        unite: (uniKey && item[uniKey]) ? String(item[uniKey]) : 'u',
+        categorie: (catKey && item[catKey]) ? item[catKey] : 'Divers'
+      };
+    }).filter(item => item.ref && item.label);
+
     CATALOGUE.sort((a, b) => {
-      if (a.categorie < b.categorie) return -1;
-      if (a.categorie > b.categorie) return 1;
-      return a.label.localeCompare(b.label);
+      const catCmp = a.categorie.localeCompare(b.categorie);
+      return catCmp !== 0 ? catCmp : a.label.localeCompare(b.label);
     });
 
-    // Mettre à jour tous les selects existants
     document.querySelectorAll('.article-select').forEach(sel => {
-      const currentVal = sel.value;
+      const v = sel.value;
       updateSelectOptions(sel);
-      sel.value = currentVal;
+      sel.value = v;
     });
 
-    console.log(`✅ Catalogue chargé : ${CATALOGUE.length} articles`);
+    console.log('✅ Catalogue chargé : ' + CATALOGUE.length + ' articles');
+
   } catch (err) {
-    console.warn('Catalogue SharePoint non disponible, mode hors ligne');
-    // Catalogue de secours minimal
+    console.error('❌ Erreur catalogue:', err.message);
+    // Fallback — quelques articles de base
     CATALOGUE = [
-      { ref: "AUTRE", label: "Autre article (préciser en saisie libre)", unite: "u", categorie: "" }
+      { ref: "HAU016", label: "ACO MULTIDRAIN 100 BP A PENTE N1", unite: "u", categorie: "FONTE DE VOIRIE" },
+      { ref: "HAU017", label: "ACO MULTIDRAIN 200 BP", unite: "u", categorie: "FONTE DE VOIRIE" },
+      { ref: "HAU018", label: "ACO MULTIDRAIN 200 BP S/P", unite: "u", categorie: "FONTE DE VOIRIE" },
     ];
+    console.warn('⚠️ Mode hors ligne — catalogue de secours activé (3 articles)');
+    document.querySelectorAll('.article-select').forEach(sel => updateSelectOptions(sel));
   }
 }
 
-function updateSelectOptions(sel) {
-  const currentVal = sel.value;
-  // Grouper par catégorie
-  const categories = {};
-  CATALOGUE.forEach(p => {
-    const cat = p.categorie || 'Divers';
-    if (!categories[cat]) categories[cat] = [];
-    categories[cat].push(p);
-  });
-
-  let html = '<option value="">— Choisir un article —</option>';
-  Object.keys(categories).sort().forEach(cat => {
-    html += `<optgroup label="${cat}">`;
-    categories[cat].forEach(p => {
-      html += `<option value="${p.ref}" data-label="${p.label}" data-unite="${p.unite}">${p.label}</option>`;
-    });
-    html += '</optgroup>';
-  });
-  sel.innerHTML = html;
-  sel.value = currentVal;
-}
-
-function buildSelectOptions() {
-  // Grouper par catégorie
-  const categories = {};
-  CATALOGUE.forEach(p => {
-    const cat = p.categorie || 'Divers';
-    if (!categories[cat]) categories[cat] = [];
-    categories[cat].push(p);
-  });
-
-  let html = '<option value="">— Choisir un article —</option>';
-  Object.keys(categories).sort().forEach(cat => {
-    html += `<optgroup label="${cat}">`;
-    categories[cat].forEach(p => {
-      html += `<option value="${p.ref}" data-label="${p.label}" data-unite="${p.unite}">${p.label}</option>`;
-    });
-    html += '</optgroup>';
-  });
-  return html;
-}
-
 // Charger le catalogue au démarrage
-loadCatalogue();
-
-let articleCounter = 0;
+loadCatalogue();et articleCounter = 0;
 
 function addArticle(type) {
   articleCounter++;
