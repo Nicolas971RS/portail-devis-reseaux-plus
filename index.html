@@ -798,7 +798,7 @@ function addArticle(type) {
       <td><span class="type-badge type-cat">CAT</span></td>
       <td>
         <select class="article-select" id="des-${id}" onchange="updateUnite(${id})" required>
-          \${buildSelectOptions()}
+          ${buildSelectOptions()}
         </select>
       </td>
       <td><input type="number" class="article-input qty" id="qty-${id}" value="1" min="1" required></td>
