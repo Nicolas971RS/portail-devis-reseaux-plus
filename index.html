@@ -957,8 +957,8 @@ function filterCatalogue(id) {
   const drop = document.getElementById('drop-' + id);
   drop.classList.add('open');
 
-  if (query.length < 2) {
-    drop.innerHTML = '<div class="search-no-result">Tapez au moins 2 caractères…</div>';
+  if (query.length < 3) {
+    drop.innerHTML = '<div class="search-no-result">Tapez au moins 3 caractères…</div>';
     return;
   }
 
@@ -966,7 +966,7 @@ function filterCatalogue(id) {
     p.label.toLowerCase().includes(query) ||
     p.ref.toLowerCase().includes(query) ||
     (p.categorie && p.categorie.toLowerCase().includes(query))
-  ).slice(0, 50);
+  ).slice(0, 100);
 
   if (results.length === 0) {
     drop.innerHTML = '<div class="search-no-result">Aucun article trouvé</div>';
@@ -1005,7 +1005,7 @@ function selectArticle(id, ref, label, unite) {
 
 function openDropdown(id) {
   const input = document.getElementById('des-' + id);
-  if (input.value.length >= 2) {
+  if (input.value.length >= 3) {
     filterCatalogue(id);
   }
 }
