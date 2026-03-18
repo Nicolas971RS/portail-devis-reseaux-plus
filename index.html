@@ -536,6 +536,77 @@
     font-size: 0.88rem;
   }
   .no-articles-msg .big { font-size: 2rem; margin-bottom: 8px; }
+
+  /* SEARCHABLE DROPDOWN */
+  .search-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  .search-input {
+    width: 100%;
+    border: 1.5px solid var(--blue-accent);
+    border-radius: 8px;
+    padding: 8px 32px 8px 10px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: white;
+    outline: none;
+    cursor: text;
+  }
+  .search-input:focus { box-shadow: 0 0 0 2px rgba(43,109,232,0.15); }
+  .search-arrow {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--blue-accent);
+    font-size: 10px;
+    pointer-events: none;
+  }
+  .search-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0; right: 0;
+    background: white;
+    border: 1.5px solid var(--blue-accent);
+    border-radius: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 500;
+    box-shadow: 0 8px 24px rgba(10,42,94,0.15);
+  }
+  .search-dropdown.open { display: block; }
+  .search-group-label {
+    padding: 6px 10px 3px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--blue-light);
+    position: sticky; top: 0;
+  }
+  .search-option {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f3f9;
+    transition: background .15s;
+  }
+  .search-option:hover, .search-option.focused { background: var(--blue-light); }
+  .search-option .ref-tag {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+  }
+  .search-no-result {
+    padding: 12px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+  }
 </style>
 </head>
 <body>
@@ -821,9 +892,17 @@ function addArticle(type) {
     tr.innerHTML = `
       <td><span class="type-badge type-cat">CAT</span></td>
       <td>
-        <select class="article-select" id="des-${id}" onchange="updateUnite(${id})" required>
-          ${buildSelectOptions()}
-        </select>
+        <div class="search-wrapper" id="wrap-${id}">
+          <input type="text" class="search-input" id="des-${id}" 
+            placeholder="Tapez 3 caractères pour rechercher…"
+            oninput="filterCatalogue(${id})"
+            onfocus="openDropdown(${id})"
+            onblur="closeDropdown(${id})"
+            autocomplete="off"
+            data-ref="" data-label="" required>
+          <span class="search-arrow">▼</span>
+          <div class="search-dropdown" id="drop-${id}"></div>
+        </div>
       </td>
       <td><input type="number" class="article-input qty" id="qty-${id}" value="1" min="1" required></td>
       <td><input type="text" class="article-input" id="uni-${id}" placeholder="u" readonly style="background:#f7f9fc; color:var(--text-muted)"></td>
@@ -872,6 +951,72 @@ function updateStepBar() {
   }
 }
 
+function filterCatalogue(id) {
+  const input = document.getElementById('des-' + id);
+  const query = input.value.trim().toLowerCase();
+  const drop = document.getElementById('drop-' + id);
+  drop.classList.add('open');
+
+  if (query.length < 2) {
+    drop.innerHTML = '<div class="search-no-result">Tapez au moins 2 caractères…</div>';
+    return;
+  }
+
+  const results = CATALOGUE.filter(p =>
+    p.label.toLowerCase().includes(query) ||
+    p.ref.toLowerCase().includes(query) ||
+    (p.categorie && p.categorie.toLowerCase().includes(query))
+  ).slice(0, 50);
+
+  if (results.length === 0) {
+    drop.innerHTML = '<div class="search-no-result">Aucun article trouvé</div>';
+    return;
+  }
+
+  // Grouper par catégorie
+  const cats = {};
+  results.forEach(p => {
+    const c = p.categorie || 'Divers';
+    if (!cats[c]) cats[c] = [];
+    cats[c].push(p);
+  });
+
+  let html = '';
+  Object.keys(cats).sort().forEach(cat => {
+    html += `<div class="search-group-label">${cat}</div>`;
+    cats[cat].forEach(p => {
+      html += `<div class="search-option" 
+        onmousedown="selectArticle(${id}, '${p.ref.replace(/'/g,"\'")}', '${p.label.replace(/'/g,"\'")}', '${p.unite}')"
+        >${p.label}<span class="ref-tag">${p.ref}</span></div>`;
+    });
+  });
+  drop.innerHTML = html;
+}
+
+function selectArticle(id, ref, label, unite) {
+  const input = document.getElementById('des-' + id);
+  input.value = label;
+  input.setAttribute('data-ref', ref);
+  input.setAttribute('data-label', label);
+  const uniEl = document.getElementById('uni-' + id);
+  if (uniEl) uniEl.value = unite;
+  document.getElementById('drop-' + id).classList.remove('open');
+}
+
+function openDropdown(id) {
+  const input = document.getElementById('des-' + id);
+  if (input.value.length >= 2) {
+    filterCatalogue(id);
+  }
+}
+
+function closeDropdown(id) {
+  setTimeout(() => {
+    const drop = document.getElementById('drop-' + id);
+    if (drop) drop.classList.remove('open');
+  }, 200);
+}
+
 function collectArticles() {
   const tbody = document.getElementById('articlesBody');
   const rows = tbody.querySelectorAll('tr');
@@ -883,10 +1028,9 @@ function collectArticles() {
     let ref = '';
 
     if (type === 'catalogue') {
-      const sel = document.getElementById('des-' + id);
-      ref = sel.value;
-      const opt = sel.options[sel.selectedIndex];
-      designation = opt ? opt.getAttribute('data-label') || '' : '';
+      const inp = document.getElementById('des-' + id);
+      ref = inp ? inp.getAttribute('data-ref') || '' : '';
+      designation = inp ? inp.getAttribute('data-label') || inp.value || '' : '';
     } else {
       designation = (document.getElementById('des-' + id) || {}).value || '';
     }
