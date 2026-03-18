@@ -1050,41 +1050,74 @@ function collectArticles() {
 // ============================================================
 function validate() {
   let ok = true;
-  ['entreprise','contact','email','chantier'].forEach(id => {
+  let firstError = null;
+
+  const requiredFields = [
+    { id: 'entreprise', label: 'Nom de l'entreprise' },
+    { id: 'contact',    label: 'Nom du contact' },
+    { id: 'email',      label: 'Adresse e-mail' },
+    { id: 'chantier',   label: 'Nom du chantier' }
+  ];
+
+  requiredFields.forEach(({ id, label }) => {
     const el = document.getElementById(id);
     el.classList.remove('invalid');
     const parent = el.closest('.field');
-    const old = parent.querySelector('.field-error');
-    if (old) old.remove();
+    const oldErr = parent.querySelector('.field-error');
+    if (oldErr) oldErr.remove();
 
     if (!el.value.trim()) {
       el.classList.add('invalid');
       const err = document.createElement('div');
       err.className = 'field-error';
-      err.textContent = 'Ce champ est requis.';
+      err.textContent = `⚠️ ${label} est obligatoire.`;
       parent.appendChild(err);
+      if (!firstError) firstError = el;
       ok = false;
     }
   });
 
+  // Validation email format
   const emailEl = document.getElementById('email');
-  if (emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
+  if (emailEl.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
     emailEl.classList.add('invalid');
     const parent = emailEl.closest('.field');
-    const old = parent.querySelector('.field-error');
-    if (old) old.remove();
+    const oldErr = parent.querySelector('.field-error');
+    if (oldErr) oldErr.remove();
     const err = document.createElement('div');
     err.className = 'field-error';
-    err.textContent = 'Adresse e-mail invalide.';
+    err.textContent = '⚠️ Format d'e-mail invalide (ex: nom@entreprise.com).';
     parent.appendChild(err);
+    if (!firstError) firstError = emailEl;
     ok = false;
   }
 
+  // Validation articles
   const articles = collectArticles();
   if (articles.length === 0) {
-    showError('Veuillez ajouter au moins un article à votre demande.');
+    showError('⚠️ Veuillez ajouter au moins un article à votre demande.');
     ok = false;
   }
+
+  // Validation articles catalogue non sélectionnés
+  const catRows = document.querySelectorAll('tr[data-type="catalogue"]');
+  catRows.forEach(row => {
+    const id = row.id.split('-')[1];
+    const inp = document.getElementById('des-' + id);
+    if (inp && !inp.getAttribute('data-ref')) {
+      inp.style.borderColor = 'var(--danger)';
+      if (!firstError) firstError = inp;
+      showError('⚠️ Un article du catalogue n'a pas été sélectionné dans la liste. Cliquez sur un résultat pour le valider.');
+      ok = false;
+    }
+  });
+
+  // Scroll vers la première erreur
+  if (firstError) {
+    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    firstError.focus();
+  }
+
   return ok;
 }
 
