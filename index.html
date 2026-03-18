@@ -1053,7 +1053,7 @@ function validate() {
   let firstError = null;
 
   const requiredFields = [
-    { id: 'entreprise', label: 'Nom de l'entreprise' },
+    { id: 'entreprise', label: "Nom de l'entreprise" },
     { id: 'contact',    label: 'Nom du contact' },
     { id: 'email',      label: 'Adresse e-mail' },
     { id: 'chantier',   label: 'Nom du chantier' }
@@ -1086,7 +1086,7 @@ function validate() {
     if (oldErr) oldErr.remove();
     const err = document.createElement('div');
     err.className = 'field-error';
-    err.textContent = '⚠️ Format d'e-mail invalide (ex: nom@entreprise.com).';
+    err.textContent = "⚠️ Format d'e-mail invalide (ex: nom@entreprise.com).";
     parent.appendChild(err);
     if (!firstError) firstError = emailEl;
     ok = false;
@@ -1107,7 +1107,7 @@ function validate() {
     if (inp && !inp.getAttribute('data-ref')) {
       inp.style.borderColor = 'var(--danger)';
       if (!firstError) firstError = inp;
-      showError('⚠️ Un article du catalogue n'a pas été sélectionné dans la liste. Cliquez sur un résultat pour le valider.');
+      showError("⚠️ Un article du catalogue n'a pas été sélectionné dans la liste. Cliquez sur un résultat pour le valider.");
       ok = false;
     }
   });
