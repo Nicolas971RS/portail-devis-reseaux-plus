@@ -764,6 +764,30 @@ async function loadCatalogue() {
   }
 }
 
+function buildSelectOptions() {
+  const categories = {};
+  CATALOGUE.forEach(p => {
+    const cat = p.categorie || 'Divers';
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(p);
+  });
+  let html = '<option value="">— Choisir un article —</option>';
+  Object.keys(categories).sort().forEach(cat => {
+    html += `<optgroup label="${cat}">`;
+    categories[cat].forEach(p => {
+      html += `<option value="${p.ref}" data-label="${p.label}" data-unite="${p.unite}">${p.label}</option>`;
+    });
+    html += '</optgroup>';
+  });
+  return html;
+}
+
+function updateSelectOptions(sel) {
+  const currentVal = sel.value;
+  sel.innerHTML = buildSelectOptions();
+  sel.value = currentVal;
+}
+
 function refreshAllSelects() {
   document.querySelectorAll('.article-select').forEach(sel => {
     const v = sel.value;
