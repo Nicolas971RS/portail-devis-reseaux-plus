@@ -905,7 +905,7 @@ function addArticle(type) {
         </div>
       </td>
       <td><input type="number" class="article-input qty" id="qty-${id}" value="1" min="1" required></td>
-      <td><input type="text" class="article-input" id="uni-${id}" placeholder="u" readonly style="background:#f7f9fc; color:var(--text-muted)"></td>
+      <td><select class="article-input" id="uni-${id}" style="padding:6px 8px; min-width:60px;"><option value="u">u</option><option value="ml">ml</option><option value="m²">m²</option><option value="kg">kg</option><option value="L">L</option></select></td>
       <td><button type="button" class="btn-delete" onclick="removeRow(${id})" title="Supprimer">✕</button></td>
     `;
   } else {
@@ -913,7 +913,7 @@ function addArticle(type) {
       <td><span class="type-badge type-libre">LIBRE</span></td>
       <td><input type="text" class="article-input" id="des-${id}" placeholder="Description de l'article…" required></td>
       <td><input type="number" class="article-input qty" id="qty-${id}" value="1" min="1" required></td>
-      <td><input type="text" class="article-input" id="uni-${id}" placeholder="u / ml / m²"></td>
+      <td><select class="article-input" id="uni-${id}" style="padding:6px 8px; min-width:60px;"><option value="u">u</option><option value="ml">ml</option><option value="m²">m²</option><option value="kg">kg</option><option value="L">L</option></select></td>
       <td><button type="button" class="btn-delete" onclick="removeRow(${id})" title="Supprimer">✕</button></td>
     `;
   }
