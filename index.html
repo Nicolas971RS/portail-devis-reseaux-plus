@@ -537,6 +537,52 @@
   }
   .no-articles-msg .big { font-size: 2rem; margin-bottom: 8px; }
 
+  /* FILE UPLOAD */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .25s;
+    background: white;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--blue-accent);
+    background: var(--blue-light);
+  }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+  .upload-label { font-size: 0.9rem; font-weight: 600; color: var(--blue-mid); }
+  .upload-sub { font-size: 0.76rem; color: var(--text-muted); margin-top: 4px; }
+
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--blue-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    animation: fadeUp .2s ease;
+  }
+  .file-item .file-icon { font-size: 18px; flex-shrink: 0; }
+  .file-item .file-name { font-size: 0.84rem; font-weight: 600; color: var(--blue-deep); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-item .file-size { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
+  .file-item .file-del { background: none; border: none; cursor: pointer; color: var(--danger); font-size: 15px; padding: 2px 6px; border-radius: 5px; opacity: 0.5; transition: opacity .2s; flex-shrink: 0; }
+  .file-item .file-del:hover { opacity: 1; background: #fdecea; }
+  .file-progress { height: 3px; background: var(--blue-accent); border-radius: 2px; margin-top: 4px; }
+
   /* SEARCHABLE DROPDOWN */
   .search-wrapper {
     position: relative;
@@ -750,6 +796,26 @@
       </div>
     </div>
 
+    <!-- CARD 4 : Pièces jointes -->
+    <div class="card" style="animation-delay:.2s">
+      <div class="card-header">
+        <div class="card-icon">📎</div>
+        <div>
+          <div class="card-title">Pièces jointes <span style="font-weight:400; color:var(--text-muted); font-size:0.85rem;">(optionnel)</span></div>
+          <div class="card-subtitle">Plans, appels d'offres, cahiers des charges, photos chantier…</div>
+        </div>
+      </div>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" multiple onchange="handleFiles(this.files)">
+        <div class="upload-icon">📂</div>
+        <div class="upload-label">Glissez vos fichiers ici ou cliquez pour parcourir</div>
+        <div class="upload-sub">Tous types de fichiers acceptés · Taille max : 5 Mo par fichier</div>
+      </div>
+
+      <div class="file-list" id="fileList"></div>
+    </div>
+
     <!-- SUBMIT -->
     <div class="submit-area">
       <div id="alertError" class="alert alert-error">
@@ -905,7 +971,7 @@ function addArticle(type) {
         </div>
       </td>
       <td><input type="number" class="article-input qty" id="qty-${id}" value="1" min="1" required></td>
-      <td><select class="article-input" id="uni-${id}" style="padding:6px 8px; min-width:60px;"><option value="u">u</option><option value="ml">ml</option><option value="m²">m²</option><option value="kg">kg</option><option value="L">L</option></select></td>
+      <td><input type="text" class="article-input" id="uni-${id}" placeholder="u" readonly style="background:#f7f9fc; color:var(--text-muted)"></td>
       <td><button type="button" class="btn-delete" onclick="removeRow(${id})" title="Supprimer">✕</button></td>
     `;
   } else {
@@ -913,7 +979,7 @@ function addArticle(type) {
       <td><span class="type-badge type-libre">LIBRE</span></td>
       <td><input type="text" class="article-input" id="des-${id}" placeholder="Description de l'article…" required></td>
       <td><input type="number" class="article-input qty" id="qty-${id}" value="1" min="1" required></td>
-      <td><select class="article-input" id="uni-${id}" style="padding:6px 8px; min-width:60px;"><option value="u">u</option><option value="ml">ml</option><option value="m²">m²</option><option value="kg">kg</option><option value="L">L</option></select></td>
+      <td><input type="text" class="article-input" id="uni-${id}" placeholder="u / ml / m²"></td>
       <td><button type="button" class="btn-delete" onclick="removeRow(${id})" title="Supprimer">✕</button></td>
     `;
   }
@@ -950,6 +1016,82 @@ function updateStepBar() {
     s2.className = 'step';
   }
 }
+
+// ============================================================
+// GESTION FICHIERS
+// ============================================================
+let uploadedFiles = []; // Array of {name, size, type, base64}
+
+function getFileIcon(type) {
+  if (type.includes('pdf')) return '📄';
+  if (type.includes('word') || type.includes('document')) return '📝';
+  if (type.includes('excel') || type.includes('sheet')) return '📊';
+  if (type.includes('image')) return '🖼️';
+  if (type.includes('zip') || type.includes('rar')) return '🗜️';
+  return '📎';
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' o';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' Ko';
+  return (bytes/1048576).toFixed(1) + ' Mo';
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    if (file.size > 5 * 1024 * 1024) {
+      showError(`⚠️ Le fichier "${file.name}" dépasse 5 Mo et n'a pas été ajouté.`);
+      return;
+    }
+    // Check not already added
+    if (uploadedFiles.find(f => f.name === file.name && f.size === file.size)) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result.split(',')[1];
+      const fileObj = { name: file.name, size: file.size, type: file.type, base64 };
+      uploadedFiles.push(fileObj);
+      renderFileList();
+    };
+    reader.readAsDataURL(file);
+  });
+  // Reset input so same file can be re-added after removal
+  document.getElementById('fileInput').value = '';
+}
+
+function renderFileList() {
+  const list = document.getElementById('fileList');
+  list.innerHTML = '';
+  uploadedFiles.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `
+      <span class="file-icon">${getFileIcon(f.type)}</span>
+      <span class="file-name" title="${f.name}">${f.name}</span>
+      <span class="file-size">${formatSize(f.size)}</span>
+      <button type="button" class="file-del" onclick="removeFile(${i})" title="Supprimer">✕</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  renderFileList();
+}
+
+// Drag & drop
+document.addEventListener('DOMContentLoaded', () => {
+  const zone = document.getElementById('uploadZone');
+  if (!zone) return;
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    handleFiles(e.dataTransfer.files);
+  });
+});
 
 function filterCatalogue(id) {
   const input = document.getElementById('des-' + id);
@@ -1154,7 +1296,8 @@ document.getElementById('devisForm').addEventListener('submit', async function(e
     chantier:    document.getElementById('chantier').value.trim(),
     remarques:   document.getElementById('remarques').value.trim(),
     dateEnvoi:   new Date().toISOString(),
-    articles:    articles
+    articles:    articles,
+    fichiers:    uploadedFiles.map(f => ({ name: f.name, type: f.type, size: f.size, base64: f.base64 }))
   };
 
   // UI → loading
