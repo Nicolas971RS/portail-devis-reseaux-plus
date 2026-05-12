@@ -1353,6 +1353,10 @@ function resetForm() {
   document.getElementById('emptyMsg').style.display = 'block';
   document.getElementById('successOverlay').classList.remove('show');
   articleCounter = 0;
+  // Reset fichiers
+  uploadedFiles = [];
+  document.getElementById('fileList').innerHTML = '';
+  document.getElementById('fileInput').value = '';
   // Reset steps
   document.getElementById('step1').className = 'step active';
   document.getElementById('step2').className = 'step';
