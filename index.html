@@ -1234,10 +1234,10 @@ function validate() {
     ok = false;
   }
 
-  // Validation articles
+  // Validation articles — obligatoire seulement si aucune pièce jointe
   const articles = collectArticles();
-  if (articles.length === 0) {
-    showError('⚠️ Veuillez ajouter au moins un article à votre demande.');
+  if (articles.length === 0 && uploadedFiles.length === 0) {
+    showError('⚠️ Veuillez ajouter au moins un article ou joindre un document à votre demande.');
     ok = false;
   }
 
