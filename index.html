@@ -192,38 +192,38 @@ textarea.form-input{resize:vertical;min-height:72px}
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Société <span class="req">*</span></label>
-              <input class="form-input" id="f-societe" type="text" placeholder="Nom de votre entreprise" oninput="liveValidate(this);updateSummary()">
+              <input class="form-input" id="f-societe" type="text" placeholder="Nom de votre entreprise">
             </div>
             <div class="form-group">
               <label class="form-label">Nom du contact <span class="req">*</span></label>
-              <input class="form-input" id="f-contact" type="text" placeholder="Prénom Nom" oninput="liveValidate(this);updateSummary()">
+              <input class="form-input" id="f-contact" type="text" placeholder="Prénom Nom">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Email <span class="req">*</span></label>
-              <input class="form-input" id="f-email" type="email" placeholder="contact@entreprise.com" oninput="liveValidate(this);updateSummary()">
+              <input class="form-input" id="f-email" type="email" placeholder="contact@entreprise.com">
             </div>
             <div class="form-group">
               <label class="form-label">Téléphone</label>
-              <input class="form-input" id="f-tel" type="tel" placeholder="0590 XX XX XX" oninput="updateSummary()">
+              <input class="form-input" id="f-tel" type="tel" placeholder="0690 XX XX XX">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Nom du chantier <span class="req">*</span></label>
-              <input class="form-input" id="f-chantier" type="text" placeholder="Ex : ZAC Jarry – Réseau EP Lot 2" oninput="liveValidate(this);updateSummary()">
+              <input class="form-input" id="f-chantier" type="text" placeholder="Ex : ZAC Jarry – Réseau EP Lot 2">
             </div>
             <div class="form-group">
               <label class="form-label">Date de besoin souhaitée</label>
-              <input class="form-input" id="f-date" type="date" oninput="updateSummary()">
+              <input class="form-input" id="f-date" type="date">
             </div>
           </div>
           <div class="form-group" style="margin-bottom:.9rem">
             <label class="form-label">Référence interne (votre N° dossier)</label>
-            <input class="form-input" id="f-ref" type="text" placeholder="Optionnel — votre BC interne, appel d'offre…" oninput="updateSummary()">
+            <input class="form-input" id="f-ref" type="text" placeholder="Optionnel — votre BC interne, appel d'offre…">
           </div>
-          <button class="validate-btn" onclick="validateSection1()" id="btn-sec1">Valider et continuer →</button>
+          <button class="validate-btn" id="btn-sec1">Valider et continuer →</button>
         </div>
       </div>
     </div>
@@ -280,7 +280,7 @@ textarea.form-input{resize:vertical;min-height:72px}
               <div id="docChip" style="display:none;margin-top:.5rem"></div>
               <div style="margin-top:.75rem">
                 <label class="form-label">Description du besoin (si document joint)</label>
-                <textarea class="form-input" id="f-doc-desc" placeholder="Précisez le contenu ou les articles concernés dans le document…" style="min-height:60px" oninput="updateSummary()"></textarea>
+                <textarea class="form-input" id="f-doc-desc" placeholder="Précisez le contenu ou les articles concernés dans le document…" style="min-height:60px"></textarea>
               </div>
             </div>
 
@@ -290,7 +290,7 @@ textarea.form-input{resize:vertical;min-height:72px}
             ⚠ Veuillez ajouter au moins un article ou joindre un document.
           </div>
 
-          <button class="validate-btn" onclick="validateSection2()" id="btn-sec2">Valider et continuer →</button>
+          <button class="validate-btn" id="btn-sec2">Valider et continuer →</button>
         </div>
       </div>
     </div>
@@ -312,7 +312,7 @@ textarea.form-input{resize:vertical;min-height:72px}
           <div style="background:var(--amber2);border-radius:var(--radius);padding:.75rem 1rem;font-size:.82rem;color:#5d4037;line-height:1.6;margin-bottom:1rem">
             ⏱ Votre devis vous sera envoyé par email sous <strong>24 à 48h ouvrées</strong>. Vous recevrez une confirmation avec votre numéro de référence <strong>DEV-XX</strong> dès l'envoi.
           </div>
-          <button class="submit-btn" onclick="submitDevis()" id="submitBtn">Envoyer ma demande de devis →</button>
+          <button class="submit-btn" id="submitBtn">Envoyer ma demande de devis →</button>
           <div class="submit-info">Un email de confirmation sera envoyé à l'adresse indiquée à l'étape 1.</div>
         </div>
       </div>
@@ -375,8 +375,8 @@ textarea.form-input{resize:vertical;min-height:72px}
     <div style="margin-top:.75rem;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:1rem">
       <div class="summary-label" style="margin-bottom:.5rem">Besoin d'aide ?</div>
       <div style="font-size:.83rem;color:var(--text2);line-height:1.8">
-        📞 0590 XX XX XX<br>
-        ✉️ devis@reseauxplus.com<br>
+        📞 0690 34 81 68<br>
+        ✉️ n.lemond@reseauxplus.com<br>
         <span style="color:var(--text3)">Lun–Ven · 7h30–17h00</span>
       </div>
     </div>
@@ -391,50 +391,96 @@ textarea.form-input{resize:vertical;min-height:72px}
 /* ============================================================
    CONFIGURATION — À RENSEIGNER AVANT DÉPLOIEMENT
    ============================================================ */
-var CONFIG = {
-  FLOW_URL_CATALOGUE: 'https://defaultd441528bbc7746368d248ac9d38aed.63.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/eceefb242fb14c2ab4ae8e527549b577/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bZs4nCj1k-cgflqU5LtZUy9SCW2aPSymDxuwbHQGpl4,
-  FLOW_URL_DEVIS:     'https://defaultd441528bbc7746368d248ac9d38aed.63.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c63b51257af6478db6cc7077e8068ebe/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=1nrvTv_DnezeOqvyNPFEq8tPtLoozC6MGy9WXxjeUV4,
-  MAX_FILE_SIZE_MB:   3
-};
+var FLOW_URL_CATALOGUE = 'https://defaultd441528bbc7746368d248ac9d38aed.63.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/eceefb242fb14c2ab4ae8e527549b577/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bZs4nCj1k-cgflqU5LtZUy9SCW2aPSymDxuwbHQGpl4;
+var FLOW_URL_DEVIS     = 'https://defaultd441528bbc7746368d248ac9d38aed.63.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c63b51257af6478db6cc7077e8068ebe/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=1nrvTv_DnezeOqvyNPFEq8tPtLoozC6MGy9WXxjeUV4;
+var MAX_FILE_MB        = 3;
 
 /* ============================================================
    ÉTAT GLOBAL
    ============================================================ */
-var state = {
+var appState = {
   sec1Done: false,
   sec2Done: false,
-  articles: [],    // [{ref, desc, qty, libre}]
-  docFile: null,   // {name, size, b64}
+  articles: [],
+  docFile: null,
   searchTimer: null,
   catalogueCache: {}
 };
+
+/* ============================================================
+   INIT — tout est branché ici, plus d'onclick inline
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function() {
+
+  /* Boutons */
+  document.getElementById('btn-sec1').addEventListener('click', validateSection1);
+  document.getElementById('btn-sec2').addEventListener('click', validateSection2);
+  document.getElementById('submitBtn').addEventListener('click', submitDevis);
+
+  /* Champs section 1 — mise à jour résumé en temps réel */
+  ['f-societe','f-contact','f-email','f-tel','f-chantier','f-date','f-ref'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', function() {
+      if (id === 'f-email') liveValidate(el);
+      updateSummary();
+    });
+  });
+
+  /* Champ description document */
+  var docDesc = document.getElementById('f-doc-desc');
+  if (docDesc) docDesc.addEventListener('input', updateSummary);
+
+  /* Recherche catalogue */
+  var catInput = document.getElementById('catalogueInput');
+  if (catInput) catInput.addEventListener('input', function() {
+    searchCatalogue(this.value);
+  });
+
+  /* Upload document */
+  var docFile = document.getElementById('docFile');
+  if (docFile) docFile.addEventListener('change', function() {
+    handleDocUpload(this);
+  });
+
+  /* Fermer dropdown catalogue au clic ailleurs */
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-wrap')) {
+      var r = document.getElementById('searchResults');
+      if (r) r.classList.remove('visible');
+    }
+  });
+
+  /* Init résumé */
+  updateSummary();
+  updateDots();
+});
 
 /* ============================================================
    ACCORDION
    ============================================================ */
 function toggleSection(id) {
   var sec = document.getElementById(id);
-  if (sec.classList.contains('locked')) return;
+  if (!sec || sec.classList.contains('locked')) return;
   sec.classList.toggle('open');
 }
 
 function openSection(id) {
   ['sec1','sec2','sec3'].forEach(function(s) {
-    document.getElementById(s).classList.remove('open');
+    var el = document.getElementById(s);
+    if (el) el.classList.remove('open');
   });
-  document.getElementById(id).classList.add('open');
+  var target = document.getElementById(id);
+  if (target) target.classList.add('open');
 }
 
 function markDone(secNum) {
-  var num = document.getElementById('num'+secNum);
-  num.className = 'section-num done';
-  num.textContent = '✓';
+  var num = document.getElementById('num' + secNum);
+  if (num) { num.className = 'section-num done'; num.textContent = '✓'; }
 }
 
 function markActive(secNum) {
-  var num = document.getElementById('num'+secNum);
-  num.className = 'section-num active';
-  num.textContent = secNum;
+  var num = document.getElementById('num' + secNum);
+  if (num) { num.className = 'section-num active'; num.textContent = secNum; }
 }
 
 /* ============================================================
@@ -442,12 +488,9 @@ function markActive(secNum) {
    ============================================================ */
 function liveValidate(el) {
   var val = el.value.trim();
-  if (el.type === 'email') {
-    el.classList.toggle('valid', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val));
-    el.classList.toggle('error', val.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val));
-  } else {
-    el.classList.toggle('valid', val.length >= 2);
-  }
+  var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  el.classList.toggle('valid', ok);
+  el.classList.toggle('error', val.length > 0 && !ok);
 }
 
 function validateSection1() {
@@ -457,27 +500,28 @@ function validateSection1() {
   var chantier = document.getElementById('f-chantier').value.trim();
   var emailOk  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  if (!societe)  document.getElementById('f-societe').classList.toggle('error', true);
+  if (!contact)  document.getElementById('f-contact').classList.toggle('error', true);
+  if (!chantier) document.getElementById('f-chantier').classList.toggle('error', true);
+  if (!email || !emailOk) document.getElementById('f-email').classList.toggle('error', true);
+
   if (!societe || !contact || !email || !chantier || !emailOk) {
     showToast('Veuillez remplir tous les champs obligatoires.', 'error');
-    if (!societe)  document.getElementById('f-societe').classList.add('error');
-    if (!contact)  document.getElementById('f-contact').classList.add('error');
-    if (!email || !emailOk) document.getElementById('f-email').classList.add('error');
-    if (!chantier) document.getElementById('f-chantier').classList.add('error');
     return;
   }
 
-  state.sec1Done = true;
+  appState.sec1Done = true;
   markDone(1);
   updateDots();
 
   var sec2 = document.getElementById('sec2');
-  sec2.classList.remove('locked');
+  if (sec2) sec2.classList.remove('locked');
   markActive(2);
   openSection('sec2');
   updateSummary();
 
-  var sum = societe + (chantier ? ' — ' + chantier : '');
-  document.getElementById('sum1').textContent = sum;
+  var sum1 = document.getElementById('sum1');
+  if (sum1) sum1.textContent = societe + (chantier ? ' — ' + chantier : '');
 }
 
 /* ============================================================
@@ -485,53 +529,60 @@ function validateSection1() {
    ============================================================ */
 function searchCatalogue(val) {
   var results = document.getElementById('searchResults');
-  clearTimeout(state.searchTimer);
+  clearTimeout(appState.searchTimer);
 
   if (val.length < 3) { results.classList.remove('visible'); return; }
 
   results.innerHTML = '<div class="search-loading">Recherche…</div>';
   results.classList.add('visible');
 
-  state.searchTimer = setTimeout(function() {
-    if (state.catalogueCache[val]) {
-      renderResults(state.catalogueCache[val]);
+  appState.searchTimer = setTimeout(function() {
+    if (appState.catalogueCache[val]) {
+      renderResults(appState.catalogueCache[val]);
       return;
     }
-    fetch(CONFIG.FLOW_URL_CATALOGUE + '&search=' + encodeURIComponent(val))
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        state.catalogueCache[val] = data;
-        renderResults(data);
-      })
-      .catch(function(){ renderResults([]); });
+    if (FLOW_URL_CATALOGUE.indexOf('REMPLACER') !== -1) {
+      renderResults([]);
+      return;
+    }
+    fetch(FLOW_URL_CATALOGUE + '&search=' + encodeURIComponent(val))
+      .then(function(r) { return r.json(); })
+      .then(function(data) { appState.catalogueCache[val] = data; renderResults(data); })
+      .catch(function() { renderResults([]); });
   }, 350);
 }
 
 function renderResults(data) {
   var results = document.getElementById('searchResults');
   if (!data || data.length === 0) {
-    results.innerHTML = '<div class="search-loading">Aucun résultat</div>';
+    results.innerHTML = '<div class="search-loading">Aucun résultat — essayez une autre recherche</div>';
     return;
   }
   results.innerHTML = data.slice(0, 50).map(function(item) {
-    var ref  = (item.Title  || item.title  || '').replace(/'/g,"&#39;");
-    var desc = (item.field_1|| item.desc   || '').replace(/'/g,"&#39;");
-    var cat  = (item.field_3|| item.cat    || '').replace(/'/g,"&#39;");
-    return '<div class="cat-item" onclick="addArticle(\''+ref+'\',\''+desc+'\',\''+cat+'\')">'
+    var ref  = (item.Title  || item.title  || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    var desc = (item.field_1|| item.desc   || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    var cat  = (item.field_3|| item.cat    || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    return '<div class="cat-item" data-ref="'+ref+'" data-desc="'+desc+'" data-cat="'+cat+'">'
       + '<span class="cat-ref">'+ref+'</span>'
       + '<span class="cat-desc">'+desc+'</span>'
       + '<span class="cat-cat">'+cat+'</span>'
       + '</div>';
   }).join('');
+
+  results.querySelectorAll('.cat-item').forEach(function(el) {
+    el.addEventListener('click', function() {
+      addArticle(this.dataset.ref, this.dataset.desc, this.dataset.cat);
+    });
+  });
 }
 
 function addArticle(ref, desc, cat) {
   document.getElementById('searchResults').classList.remove('visible');
   document.getElementById('catalogueInput').value = '';
-  if (state.articles.find(function(a){ return a.ref === ref; })) {
+  if (appState.articles.find(function(a) { return a.ref === ref; })) {
     showToast('Article déjà dans le devis'); return;
   }
-  state.articles.push({ref:ref, desc:desc, qty:1, libre:false});
+  appState.articles.push({ref: ref, desc: desc, qty: 1, libre: false});
   renderLignes();
   updateMethodBadge();
   updateSummary();
@@ -541,7 +592,7 @@ function addArticle(ref, desc, cat) {
 function addLibre() {
   var desc = prompt('Désignation de l\'article :');
   if (!desc || !desc.trim()) return;
-  state.articles.push({ref:'LIBRE', desc:desc.trim(), qty:1, libre:true});
+  appState.articles.push({ref: 'LIBRE', desc: desc.trim(), qty: 1, libre: true});
   renderLignes();
   updateMethodBadge();
   updateSummary();
@@ -549,7 +600,7 @@ function addLibre() {
 }
 
 function removeArticle(idx) {
-  state.articles.splice(idx, 1);
+  appState.articles.splice(idx, 1);
   renderLignes();
   updateMethodBadge();
   updateSummary();
@@ -558,21 +609,33 @@ function removeArticle(idx) {
 function renderLignes() {
   var tbody = document.getElementById('lignesBody');
   var table = document.getElementById('lignesTable');
-  if (state.articles.length === 0) { table.style.display = 'none'; return; }
+  if (appState.articles.length === 0) { table.style.display = 'none'; return; }
   table.style.display = 'table';
-  tbody.innerHTML = state.articles.map(function(a, i) {
+  tbody.innerHTML = appState.articles.map(function(a, i) {
     return '<tr>'
       + '<td class="ligne-ref">' + a.ref + '</td>'
       + '<td style="font-size:.82rem">' + a.desc + '</td>'
-      + '<td><input class="qty-input" type="number" min="1" value="'+a.qty+'" onchange="state.articles['+i+'].qty=this.value;updateSummary()"></td>'
-      + '<td><button class="del-btn" onclick="removeArticle('+i+')">✕</button></td>'
+      + '<td><input class="qty-input" type="number" min="1" value="' + a.qty + '" data-idx="' + i + '"></td>'
+      + '<td><button class="del-btn" data-idx="' + i + '">✕</button></td>'
       + '</tr>';
   }).join('');
+
+  tbody.querySelectorAll('.qty-input').forEach(function(el) {
+    el.addEventListener('change', function() {
+      appState.articles[parseInt(this.dataset.idx)].qty = this.value;
+      updateSummary();
+    });
+  });
+  tbody.querySelectorAll('.del-btn').forEach(function(el) {
+    el.addEventListener('click', function() {
+      removeArticle(parseInt(this.dataset.idx));
+    });
+  });
 }
 
 function updateMethodBadge() {
   var box = document.getElementById('method-catalogue');
-  box.classList.toggle('has-content', state.articles.length > 0);
+  if (box) box.classList.toggle('has-content', appState.articles.length > 0);
 }
 
 /* ============================================================
@@ -582,9 +645,8 @@ function handleDocUpload(input) {
   var file = input.files[0];
   if (!file) return;
 
-  var maxBytes = CONFIG.MAX_FILE_SIZE_MB * 1024 * 1024;
-  if (file.size > maxBytes) {
-    showToast('Fichier trop lourd (max ' + CONFIG.MAX_FILE_SIZE_MB + ' Mo)', 'error');
+  if (file.size > MAX_FILE_MB * 1024 * 1024) {
+    showToast('Fichier trop lourd (max ' + MAX_FILE_MB + ' Mo)', 'error');
     input.value = '';
     return;
   }
@@ -592,15 +654,16 @@ function handleDocUpload(input) {
   var reader = new FileReader();
   reader.onload = function(e) {
     var b64 = e.target.result.split(',')[1];
-    state.docFile = { name: file.name, size: file.size, b64: b64, type: file.type };
+    appState.docFile = {name: file.name, size: file.size, b64: b64, type: file.type};
 
     var zone = document.getElementById('docUploadZone');
     zone.classList.add('has-file');
     zone.innerHTML = '<div class="upload-icon">📄</div>'
       + '<div class="upload-text">' + file.name + '</div>'
-      + '<div class="file-chip">✓ Fichier joint · ' + (file.size/1024).toFixed(0) + ' Ko</div>';
+      + '<div class="file-chip">✓ Fichier joint · ' + (file.size / 1024).toFixed(0) + ' Ko</div>';
 
-    document.getElementById('method-document').classList.add('has-content');
+    var box = document.getElementById('method-document');
+    if (box) box.classList.add('has-content');
     updateSummary();
     showToast('Document joint : ' + file.name);
   };
@@ -611,29 +674,32 @@ function handleDocUpload(input) {
    VALIDATION SECTION 2
    ============================================================ */
 function validateSection2() {
-  var hasArticles = state.articles.length > 0;
-  var hasDoc      = !!state.docFile;
+  var hasArticles = appState.articles.length > 0;
+  var hasDoc      = !!appState.docFile;
 
   if (!hasArticles && !hasDoc) {
-    document.getElementById('articles-error').style.display = 'block';
+    var err = document.getElementById('articles-error');
+    if (err) err.style.display = 'block';
     showToast('Ajoutez au moins un article ou un document.', 'error');
     return;
   }
-  document.getElementById('articles-error').style.display = 'none';
+  var err = document.getElementById('articles-error');
+  if (err) err.style.display = 'none';
 
-  state.sec2Done = true;
+  appState.sec2Done = true;
   markDone(2);
   updateDots();
 
   var sec3 = document.getElementById('sec3');
-  sec3.classList.remove('locked');
+  if (sec3) sec3.classList.remove('locked');
   markActive(3);
   openSection('sec3');
 
   var parts = [];
-  if (hasArticles) parts.push(state.articles.length + ' article'+(state.articles.length>1?'s':''));
+  if (hasArticles) parts.push(appState.articles.length + ' article' + (appState.articles.length > 1 ? 's' : ''));
   if (hasDoc)      parts.push('1 document');
-  document.getElementById('sum2').textContent = parts.join(' + ');
+  var sum2 = document.getElementById('sum2');
+  if (sum2) sum2.textContent = parts.join(' + ');
   updateSummary();
 }
 
@@ -654,38 +720,34 @@ function submitDevis() {
     'DATE_BESOIN='+ document.getElementById('f-date').value,
     'REF_INTERNE='+ document.getElementById('f-ref').value.trim(),
     'COMMENTAIRE='+ document.getElementById('f-commentaire').value.trim(),
-    'NB_ARTICLES='+ state.articles.length,
-    'ARTICLES='   + JSON.stringify(state.articles),
-    'DOC_NOM='    + (state.docFile ? state.docFile.name : ''),
+    'NB_ARTICLES='+ appState.articles.length,
+    'ARTICLES='   + JSON.stringify(appState.articles),
+    'DOC_NOM='    + (appState.docFile ? appState.docFile.name : ''),
     'DOC_DESC='   + document.getElementById('f-doc-desc').value.trim(),
-    'DOC_TYPE='   + (state.docFile ? state.docFile.type : ''),
-    'DOC_B64='    + (state.docFile ? state.docFile.b64 : '')
+    'DOC_TYPE='   + (appState.docFile ? appState.docFile.type : ''),
+    'DOC_B64='    + (appState.docFile ? appState.docFile.b64 : '')
   ].join('\n');
 
-  fetch(CONFIG.FLOW_URL_DEVIS, {
+  fetch(FLOW_URL_DEVIS, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
+    headers: {'Content-Type': 'text/plain'},
     mode: 'no-cors',
     body: payload
   })
   .then(function() { showSuccess(); })
-  .catch(function() { showSuccess(); }); // no-cors = opaque, always catch
+  .catch(function() { showSuccess(); });
 }
 
 function showSuccess() {
   var email = document.getElementById('f-email').value.trim();
   document.getElementById('accordion').style.display = 'none';
   var ss = document.getElementById('successState');
-  ss.classList.add('visible');
-  // Numéro réel généré par Power Automate, on simule l'attente
+  if (ss) ss.classList.add('visible');
   document.getElementById('successRef').textContent = 'Demande envoyée ✓';
   document.getElementById('successEmail').textContent = email;
-  updateSummary();
 }
 
-function resetForm() {
-  location.reload();
-}
+function resetForm() { location.reload(); }
 
 /* ============================================================
    RÉSUMÉ & DOTS
@@ -696,42 +758,44 @@ function updateSummary() {
   var email    = document.getElementById('f-email').value.trim();
   var chantier = document.getElementById('f-chantier').value.trim();
 
-  document.getElementById('sum-client').innerHTML = societe
-    ? '<div class="summary-value">'+societe+'</div>'
+  var sc = document.getElementById('sum-client');
+  if (sc) sc.innerHTML = societe
+    ? '<div class="summary-value">' + societe + '</div>'
     : '<div class="summary-empty">Non renseigné</div>';
 
-  document.getElementById('sum-chantier').innerHTML = chantier
-    ? '<div class="summary-value">'+chantier+'</div>'
+  var sch = document.getElementById('sum-chantier');
+  if (sch) sch.innerHTML = chantier
+    ? '<div class="summary-value">' + chantier + '</div>'
     : '<div class="summary-empty">Non renseigné</div>';
 
-  document.getElementById('sum-contact').innerHTML = (contact || email)
-    ? '<div class="summary-value">'+(contact||'')+(email?'<br><span style="color:var(--text3)">'+email+'</span>':'')+'</div>'
+  var sco = document.getElementById('sum-contact');
+  if (sco) sco.innerHTML = (contact || email)
+    ? '<div class="summary-value">' + (contact || '') + (email ? '<br><span style="color:var(--text3)">' + email + '</span>' : '') + '</div>'
     : '<div class="summary-empty">Non renseigné</div>';
 
-  if (state.articles.length > 0) {
-    document.getElementById('sum-articles').innerHTML = state.articles.map(function(a){
-      return '<span class="art-chip">'+a.ref+'</span>';
-    }).join('');
-  } else {
-    document.getElementById('sum-articles').innerHTML = '<div class="summary-empty">Aucun article</div>';
-  }
+  var sa = document.getElementById('sum-articles');
+  if (sa) sa.innerHTML = appState.articles.length > 0
+    ? appState.articles.map(function(a) { return '<span class="art-chip">' + a.ref + '</span>'; }).join('')
+    : '<div class="summary-empty">Aucun article</div>';
 
-  if (state.docFile) {
-    document.getElementById('sum-document').innerHTML = '<span class="doc-chip">📄 '+state.docFile.name+'</span>';
-  } else {
-    document.getElementById('sum-document').innerHTML = '<div class="summary-empty">Aucun document</div>';
-  }
+  var sd = document.getElementById('sum-document');
+  if (sd) sd.innerHTML = appState.docFile
+    ? '<span class="doc-chip">📄 ' + appState.docFile.name + '</span>'
+    : '<div class="summary-empty">Aucun document</div>';
 }
 
 function updateDots() {
-  var colors = { done:'var(--green)', active:'var(--blue2)', pending:'var(--border)' };
-  function setDot(n, state) {
-    document.getElementById('dot'+n).style.background = colors[state];
-    document.getElementById('status'+n).style.color = state==='pending' ? 'var(--color-text-tertiary, #78909c)' : 'var(--text)';
-  }
-  setDot(1, window.state.sec1Done ? 'done' : 'active');
-  setDot(2, window.state.sec2Done ? 'done' : (window.state.sec1Done ? 'active' : 'pending'));
-  setDot(3, window.state.sec2Done ? 'active' : 'pending');
+  var done  = 'var(--green)';
+  var actif = 'var(--blue2)';
+  var pend  = 'var(--border)';
+
+  var d1 = document.getElementById('dot1');
+  var d2 = document.getElementById('dot2');
+  var d3 = document.getElementById('dot3');
+
+  if (d1) d1.style.background = appState.sec1Done ? done : actif;
+  if (d2) d2.style.background = appState.sec2Done ? done : (appState.sec1Done ? actif : pend);
+  if (d3) d3.style.background = appState.sec2Done ? actif : pend;
 }
 
 /* ============================================================
@@ -740,17 +804,10 @@ function updateDots() {
 function showToast(msg, type) {
   var t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast' + (type ? ' '+type : '');
+  t.className = 'toast' + (type ? ' ' + type : '');
   t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+  setTimeout(function() { t.classList.remove('show'); }, 2800);
 }
-
-/* Fermer les résultats au clic ailleurs */
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.search-wrap')) {
-    document.getElementById('searchResults').classList.remove('visible');
-  }
-});
 </script>
 </body>
 </html>
