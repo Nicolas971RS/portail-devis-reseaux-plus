@@ -209,15 +209,9 @@ textarea.form-input{resize:vertical;min-height:72px}
               <input class="form-input" id="f-tel" type="tel" placeholder="0690 XX XX XX">
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Nom du chantier <span class="req">*</span></label>
-              <input class="form-input" id="f-chantier" type="text" placeholder="Ex : ZAC Jarry – Réseau EP Lot 2">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Date de besoin souhaitée</label>
-              <input class="form-input" id="f-date" type="date">
-            </div>
+          <div class="form-group">
+            <label class="form-label">Nom du chantier <span class="req">*</span></label>
+            <input class="form-input" id="f-chantier" type="text" placeholder="Ex : ZAC Jarry – Réseau EP Lot 2">
           </div>
           <div class="form-group" style="margin-bottom:.9rem">
             <label class="form-label">Référence interne (votre N° dossier)</label>
@@ -750,7 +744,7 @@ function renderDocFiles() {
     + appState.docFiles.length + ' fichier' + (appState.docFiles.length > 1 ? 's joints' : ' joint')
     + '</div>'
     + '<div style="width:100%;font-size:.8rem">' + listHtml + '</div>'
-    + '<div style="font-size:.73rem;color:var(--text3);margin-top:.4rem">Cliquer pour ajouter d'autres fichiers</div>';
+    + '<div style="font-size:.73rem;color:var(--text3);margin-top:.4rem">Cliquer pour ajouter d\'autres fichiers</div>';
   if (box) box.classList.add('has-content');
   showToast(appState.docFiles.length + ' fichier' + (appState.docFiles.length > 1 ? 's joints' : ' joint'));
 }
@@ -808,7 +802,7 @@ function submitDevis() {
     email:        document.getElementById('f-email').value.trim(),
     telephone:    document.getElementById('f-tel').value.trim(),
     chantier:     document.getElementById('f-chantier').value.trim(),
-    dateEnvoi:    new Date().toISOString(),
+    dateEnvoi:    new Date().toISOString(),  /* date côté serveur */
     remarques:    document.getElementById('f-commentaire').value.trim(),
     articles:     appState.articles,
     fichiers:     appState.docFiles.map(function(f) {
