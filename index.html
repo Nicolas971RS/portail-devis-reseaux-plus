@@ -533,23 +533,35 @@ function searchCatalogue(val) {
 
   if (val.length < 3) { results.classList.remove('visible'); return; }
 
-  results.innerHTML = '<div class="search-loading">Recherche…</div>';
   results.classList.add('visible');
 
+  /* Catalogue déjà chargé — filtrage local immédiat */
+  if (appState.catalogueCache['__all__']) {
+    renderResults(filterCatalogue(appState.catalogueCache['__all__'], val));
+    return;
+  }
+
+  results.innerHTML = '<div class="search-loading">Chargement du catalogue…</div>';
+
   appState.searchTimer = setTimeout(function() {
-    if (appState.catalogueCache[val]) {
-      renderResults(appState.catalogueCache[val]);
-      return;
-    }
-    if (FLOW_URL_CATALOGUE.indexOf('REMPLACER') !== -1) {
-      renderResults([]);
-      return;
-    }
-    fetch(FLOW_URL_CATALOGUE + '&search=' + encodeURIComponent(val))
+    fetch(FLOW_URL_CATALOGUE)
       .then(function(r) { return r.json(); })
-      .then(function(data) { appState.catalogueCache[val] = data; renderResults(data); })
+      .then(function(data) {
+        appState.catalogueCache['__all__'] = data;
+        renderResults(filterCatalogue(data, val));
+      })
       .catch(function() { renderResults([]); });
-  }, 350);
+  }, 300);
+}
+
+function filterCatalogue(data, val) {
+  var q = val.toLowerCase().trim();
+  return data.filter(function(item) {
+    var ref  = (item.Title   || item.title  || '').toLowerCase();
+    var desc = (item.field_1 || item.desc   || '').toLowerCase();
+    var cat  = (item.field_3 || item.cat    || '').toLowerCase();
+    return ref.indexOf(q) !== -1 || desc.indexOf(q) !== -1 || cat.indexOf(q) !== -1;
+  }).slice(0, 100);
 }
 
 function renderResults(data) {
