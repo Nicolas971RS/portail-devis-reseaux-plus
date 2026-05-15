@@ -33,7 +33,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--gray1);color:v
 .header-title{font-size:.9rem;color:#90caf9;margin-left:auto}
 
 /* LAYOUT */
-.main{max-width:1060px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:1fr 300px;gap:1.25rem;align-items:start}
+.main{max-width:1100px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:1fr 220px;gap:1.25rem;align-items:start}
 @media(max-width:720px){.main{grid-template-columns:1fr}.summary-col{display:none}}
 
 /* ACCORDION */
@@ -71,7 +71,7 @@ textarea.form-input{resize:vertical;min-height:72px}
 .form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2378909c' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;padding-right:2rem}
 
 /* MÉTHODES ARTICLES */
-.methods-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:.75rem;margin-bottom:1rem}
+.methods-grid{display:grid;grid-template-columns:3fr auto 2fr;gap:.75rem;margin-bottom:1rem}
 .method-separator{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem}
 .method-separator::before,.method-separator::after{content:'';width:1px;flex:1;background:var(--border)}
 .method-separator span{font-size:.75rem;color:var(--text3);background:#fff;padding:.2rem .3rem}
@@ -259,7 +259,13 @@ textarea.form-input{resize:vertical;min-height:72px}
                   <thead><tr><th>Réf.</th><th>Désignation</th><th>Qté</th><th></th></tr></thead>
                   <tbody id="lignesBody"></tbody>
                 </table>
-                <button class="libre-btn" onclick="addLibre()">+ Article hors catalogue (saisie libre)</button>
+                <div id="libre-area">
+                  <button class="libre-btn" id="libre-toggle-btn">+ Article hors catalogue (saisie libre)</button>
+                  <div id="libre-form" style="display:none;margin-top:.5rem;display:none">
+                    <input class="form-input" id="libre-input" type="text" placeholder="Description de l'article…" style="margin-bottom:.4rem">
+                    <button class="validate-btn" id="libre-submit-btn" style="padding:.45rem;font-size:.82rem">Ajouter cet article →</button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -412,10 +418,39 @@ var appState = {
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function() {
 
-  /* Boutons */
+  /* Boutons accordion */
   document.getElementById('btn-sec1').addEventListener('click', validateSection1);
   document.getElementById('btn-sec2').addEventListener('click', validateSection2);
   document.getElementById('submitBtn').addEventListener('click', submitDevis);
+
+  /* Saisie libre inline */
+  var toggleBtn = document.getElementById('libre-toggle-btn');
+  var libreForm = document.getElementById('libre-form');
+  var libreInput = document.getElementById('libre-input');
+  var libreSubmit = document.getElementById('libre-submit-btn');
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      libreForm.style.display = libreForm.style.display === 'none' ? 'block' : 'none';
+      if (libreForm.style.display === 'block') libreInput.focus();
+    });
+  }
+  if (libreSubmit) {
+    libreSubmit.addEventListener('click', function() {
+      var desc = libreInput.value.trim();
+      if (!desc) { libreInput.focus(); return; }
+      appState.articles.push({type: 'libre', ref: '', designation: desc, quantite: 1, unite: ''});
+      libreInput.value = '';
+      libreForm.style.display = 'none';
+      renderLignes();
+      updateMethodBadge();
+      updateSummary();
+      showToast('Article ajouté : ' + desc);
+    });
+    libreInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') libreSubmit.click();
+    });
+  }
 
   /* Champs section 1 — mise à jour résumé en temps réel */
   ['f-societe','f-contact','f-email','f-tel','f-chantier','f-date','f-ref'].forEach(function(id) {
@@ -601,15 +636,7 @@ function addArticle(ref, desc, cat) {
   showToast('Article ajouté : ' + ref);
 }
 
-function addLibre() {
-  var desc = prompt('Désignation de l\'article :');
-  if (!desc || !desc.trim()) return;
-  appState.articles.push({type: 'libre', ref: '', designation: desc.trim(), quantite: 1, unite: ''});
-  renderLignes();
-  updateMethodBadge();
-  updateSummary();
-  showToast('Article hors catalogue ajouté');
-}
+/* addLibre remplacé par saisie inline — voir DOMContentLoaded */
 
 function removeArticle(idx) {
   appState.articles.splice(idx, 1);
@@ -624,16 +651,19 @@ function renderLignes() {
   if (appState.articles.length === 0) { table.style.display = 'none'; return; }
   table.style.display = 'table';
   tbody.innerHTML = appState.articles.map(function(a, i) {
+    var refLabel = a.ref ? a.ref : '<span style="font-size:.72rem;color:var(--text3);font-style:italic">libre</span>';
     return '<tr>'
-      + '<td class="ligne-ref">' + a.ref + '</td>'
+      + '<td class="ligne-ref">' + refLabel + '</td>'
       + '<td style="font-size:.82rem">' + a.designation + '</td>'
-      + '<td><input class="qty-input" type="number" min="1" value="' + (a.quantite || 1) + '" data-idx="' + i + '"></td>'
+      + '<td><input class="qty-input" type="number" min="1" data-idx="' + i + '" data-qty="' + (a.quantite || 1) + '"></td>'
       + '<td><button class="del-btn" data-idx="' + i + '">✕</button></td>'
       + '</tr>';
   }).join('');
 
+  /* Définir les valeurs QTÉ après insertion DOM (plus fiable que l'attribut value) */
   tbody.querySelectorAll('.qty-input').forEach(function(el) {
-    el.addEventListener('change', function() {
+    el.value = el.getAttribute('data-qty') || 1;
+    el.addEventListener('input', function() {
       appState.articles[parseInt(this.dataset.idx)].quantite = parseFloat(this.value) || 1;
       updateSummary();
     });
