@@ -256,7 +256,7 @@ textarea.form-input{resize:vertical;min-height:72px}
               </div>
               <div class="lignes-wrap">
                 <table class="lignes-table" id="lignesTable" style="display:none">
-                  <thead><tr><th>Réf.</th><th>Désignation</th><th>Qté</th><th></th></tr></thead>
+                  <thead><tr><th>Réf.</th><th>Désignation</th><th>Qté</th><th>Unité</th><th></th></tr></thead>
                   <tbody id="lignesBody"></tbody>
                 </table>
                 <div id="libre-area">
@@ -439,8 +439,11 @@ document.addEventListener('DOMContentLoaded', function() {
     libreSubmit.addEventListener('click', function() {
       var desc = libreInput.value.trim();
       if (!desc) { libreInput.focus(); return; }
-      appState.articles.push({type: 'libre', ref: '', designation: desc, quantite: 1, unite: ''});
+      var libreUniteEl = document.getElementById('libre-unite');
+      var libreUnite = libreUniteEl ? libreUniteEl.value.trim() : '';
+      appState.articles.push({type: 'libre', ref: '', designation: desc, quantite: 1, unite: libreUnite});
       libreInput.value = '';
+      if (libreUniteEl) libreUniteEl.value = '';
       libreForm.style.display = 'none';
       renderLignes();
       updateMethodBadge();
@@ -606,10 +609,11 @@ function renderResults(data) {
     return;
   }
   results.innerHTML = data.slice(0, 50).map(function(item) {
-    var ref  = (item.Title  || item.title  || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-    var desc = (item.field_1|| item.desc   || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-    var cat  = (item.field_3|| item.cat    || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-    return '<div class="cat-item" data-ref="'+ref+'" data-desc="'+desc+'" data-cat="'+cat+'">'
+    var ref   = (item.Title  || item.title  || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    var desc  = (item.field_1|| item.desc   || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    var cat   = (item.field_3|| item.cat    || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    var unite = (item.field_5|| item.unite  || 'u').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    return '<div class="cat-item" data-ref="'+ref+'" data-desc="'+desc+'" data-cat="'+cat+'" data-unite="'+unite+'">'
       + '<span class="cat-ref">'+ref+'</span>'
       + '<span class="cat-desc">'+desc+'</span>'
       + '<span class="cat-cat">'+cat+'</span>'
@@ -618,18 +622,18 @@ function renderResults(data) {
 
   results.querySelectorAll('.cat-item').forEach(function(el) {
     el.addEventListener('click', function() {
-      addArticle(this.dataset.ref, this.dataset.desc, this.dataset.cat);
+      addArticle(this.dataset.ref, this.dataset.desc, this.dataset.cat, this.dataset.unite || 'u');
     });
   });
 }
 
-function addArticle(ref, desc, cat) {
+function addArticle(ref, desc, cat, unite) {
   document.getElementById('searchResults').classList.remove('visible');
   document.getElementById('catalogueInput').value = '';
   if (appState.articles.find(function(a) { return a.ref === ref; })) {
     showToast('Article déjà dans le devis'); return;
   }
-  appState.articles.push({type: 'catalogue', ref: ref, designation: desc, quantite: 1, unite: ''});
+  appState.articles.push({type: 'catalogue', ref: ref, designation: desc, quantite: 1, unite: unite || 'u'});
   renderLignes();
   updateMethodBadge();
   updateSummary();
@@ -656,17 +660,25 @@ function renderLignes() {
       + '<td class="ligne-ref">' + refLabel + '</td>'
       + '<td style="font-size:.82rem">' + a.designation + '</td>'
       + '<td><input class="qty-input" type="number" min="1" data-idx="' + i + '" data-qty="' + (a.quantite || 1) + '"></td>'
+      + '<td><input class="qty-input" type="text" data-idx="' + i + '" data-unite="1" style="width:44px;text-align:center" data-initunite="' + (a.unite || '') + '"></td>'
       + '<td><button class="del-btn" data-idx="' + i + '">✕</button></td>'
       + '</tr>';
   }).join('');
 
-  /* Définir les valeurs QTÉ après insertion DOM (plus fiable que l'attribut value) */
+  /* Définir les valeurs après insertion DOM */
   tbody.querySelectorAll('.qty-input').forEach(function(el) {
-    el.value = el.getAttribute('data-qty') || 1;
-    el.addEventListener('input', function() {
-      appState.articles[parseInt(this.dataset.idx)].quantite = parseFloat(this.value) || 1;
-      updateSummary();
-    });
+    if (el.getAttribute('data-qty') !== null) {
+      el.value = el.getAttribute('data-qty') || 1;
+      el.addEventListener('input', function() {
+        appState.articles[parseInt(this.dataset.idx)].quantite = parseFloat(this.value) || 1;
+        updateSummary();
+      });
+    } else if (el.getAttribute('data-unite') !== null) {
+      el.value = el.getAttribute('data-initunite') || '';
+      el.addEventListener('input', function() {
+        appState.articles[parseInt(this.dataset.idx)].unite = this.value.trim();
+      });
+    }
   });
   tbody.querySelectorAll('.del-btn').forEach(function(el) {
     el.addEventListener('click', function() {
