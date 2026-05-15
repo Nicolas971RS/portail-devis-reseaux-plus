@@ -594,7 +594,7 @@ function addArticle(ref, desc, cat) {
   if (appState.articles.find(function(a) { return a.ref === ref; })) {
     showToast('Article déjà dans le devis'); return;
   }
-  appState.articles.push({ref: ref, desc: desc, qty: 1, libre: false});
+  appState.articles.push({type: 'catalogue', ref: ref, designation: desc, quantite: 1, unite: ''});
   renderLignes();
   updateMethodBadge();
   updateSummary();
@@ -604,7 +604,7 @@ function addArticle(ref, desc, cat) {
 function addLibre() {
   var desc = prompt('Désignation de l\'article :');
   if (!desc || !desc.trim()) return;
-  appState.articles.push({ref: 'LIBRE', desc: desc.trim(), qty: 1, libre: true});
+  appState.articles.push({type: 'libre', ref: '', designation: desc.trim(), quantite: 1, unite: ''});
   renderLignes();
   updateMethodBadge();
   updateSummary();
@@ -626,7 +626,7 @@ function renderLignes() {
   tbody.innerHTML = appState.articles.map(function(a, i) {
     return '<tr>'
       + '<td class="ligne-ref">' + a.ref + '</td>'
-      + '<td style="font-size:.82rem">' + a.desc + '</td>'
+      + '<td style="font-size:.82rem">' + a.designation + '</td>'
       + '<td><input class="qty-input" type="number" min="1" value="' + a.qty + '" data-idx="' + i + '"></td>'
       + '<td><button class="del-btn" data-idx="' + i + '">✕</button></td>'
       + '</tr>';
@@ -634,7 +634,7 @@ function renderLignes() {
 
   tbody.querySelectorAll('.qty-input').forEach(function(el) {
     el.addEventListener('change', function() {
-      appState.articles[parseInt(this.dataset.idx)].qty = this.value;
+      appState.articles[parseInt(this.dataset.idx)].quantite = parseFloat(this.value) || 1;
       updateSummary();
     });
   });
@@ -729,14 +729,15 @@ function submitDevis() {
     email:        document.getElementById('f-email').value.trim(),
     telephone:    document.getElementById('f-tel').value.trim(),
     chantier:     document.getElementById('f-chantier').value.trim(),
-    date_besoin:  document.getElementById('f-date').value,
-    ref_interne:  document.getElementById('f-ref').value.trim(),
+    dateEnvoi:    new Date().toISOString(),
     remarques:    document.getElementById('f-commentaire').value.trim(),
     articles:     appState.articles,
-    doc_nom:      appState.docFile ? appState.docFile.name : '',
-    doc_desc:     document.getElementById('f-doc-desc').value.trim(),
-    doc_type:     appState.docFile ? appState.docFile.type : '',
-    doc_b64:      appState.docFile ? appState.docFile.b64 : ''
+    fichiers:     appState.docFile ? [{
+      name:   appState.docFile.name,
+      type:   appState.docFile.type,
+      size:   appState.docFile.size,
+      base64: appState.docFile.b64
+    }] : []
   });
 
   fetch(FLOW_URL_DEVIS, {
