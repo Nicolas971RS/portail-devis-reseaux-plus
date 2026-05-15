@@ -723,22 +723,21 @@ function submitDevis() {
   btn.textContent = 'Envoi en cours…';
   btn.disabled = true;
 
-  var payload = [
-    'SOCIETE='    + document.getElementById('f-societe').value.trim(),
-    'CONTACT='    + document.getElementById('f-contact').value.trim(),
-    'EMAIL='      + document.getElementById('f-email').value.trim(),
-    'TEL='        + document.getElementById('f-tel').value.trim(),
-    'CHANTIER='   + document.getElementById('f-chantier').value.trim(),
-    'DATE_BESOIN='+ document.getElementById('f-date').value,
-    'REF_INTERNE='+ document.getElementById('f-ref').value.trim(),
-    'COMMENTAIRE='+ document.getElementById('f-commentaire').value.trim(),
-    'NB_ARTICLES='+ appState.articles.length,
-    'ARTICLES='   + JSON.stringify(appState.articles),
-    'DOC_NOM='    + (appState.docFile ? appState.docFile.name : ''),
-    'DOC_DESC='   + document.getElementById('f-doc-desc').value.trim(),
-    'DOC_TYPE='   + (appState.docFile ? appState.docFile.type : ''),
-    'DOC_B64='    + (appState.docFile ? appState.docFile.b64 : '')
-  ].join('\n');
+  var payload = JSON.stringify({
+    entreprise:   document.getElementById('f-societe').value.trim(),
+    contact:      document.getElementById('f-contact').value.trim(),
+    email:        document.getElementById('f-email').value.trim(),
+    telephone:    document.getElementById('f-tel').value.trim(),
+    chantier:     document.getElementById('f-chantier').value.trim(),
+    date_besoin:  document.getElementById('f-date').value,
+    ref_interne:  document.getElementById('f-ref').value.trim(),
+    remarques:    document.getElementById('f-commentaire').value.trim(),
+    articles:     appState.articles,
+    doc_nom:      appState.docFile ? appState.docFile.name : '',
+    doc_desc:     document.getElementById('f-doc-desc').value.trim(),
+    doc_type:     appState.docFile ? appState.docFile.type : '',
+    doc_b64:      appState.docFile ? appState.docFile.b64 : ''
+  });
 
   fetch(FLOW_URL_DEVIS, {
     method: 'POST',
