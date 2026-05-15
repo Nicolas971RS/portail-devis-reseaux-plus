@@ -280,9 +280,9 @@ textarea.form-input{resize:vertical;min-height:72px}
               <div class="upload-zone" id="docUploadZone" onclick="document.getElementById('docFile').click()">
                 <div class="upload-icon">📂</div>
                 <div class="upload-text">Cliquer pour sélectionner</div>
-                <div class="upload-sub">PDF, Excel, DWG — max 3 Mo</div>
+                <div class="upload-sub">PDF, Excel, DWG — max 3 Mo par fichier · plusieurs fichiers acceptés</div>
               </div>
-              <input type="file" id="docFile" accept=".pdf,.xlsx,.xls,.dwg,.doc,.docx" style="display:none" onchange="handleDocUpload(this)">
+              <input type="file" id="docFile" accept=".pdf,.xlsx,.xls,.dwg,.doc,.docx" style="display:none" multiple onchange="handleDocUpload(this)">
               <div id="docChip" style="display:none;margin-top:.5rem"></div>
               <div style="margin-top:.75rem">
                 <label class="form-label">Description du besoin (si document joint)</label>
@@ -383,7 +383,7 @@ textarea.form-input{resize:vertical;min-height:72px}
       <div style="font-size:.83rem;color:var(--text2);line-height:1.8">
         📞 0690 34 81 68<br>
         ✉️ n.lemond@reseauxplus.com<br>
-        <span style="color:var(--text3)">Lun–Ven · 7h30–17h00</span>
+        <span style="color:var(--text3)">Lun–Ven · 6h30–14h30</span>
       </div>
     </div>
   </div>
@@ -408,7 +408,7 @@ var appState = {
   sec1Done: false,
   sec2Done: false,
   articles: [],
-  docFile: null,
+  docFiles: [],  /* tableau de pièces jointes */
   searchTimer: null,
   catalogueCache: {}
 };
@@ -696,32 +696,69 @@ function updateMethodBadge() {
    UPLOAD DOCUMENT
    ============================================================ */
 function handleDocUpload(input) {
-  var file = input.files[0];
-  if (!file) return;
+  var files = Array.from(input.files);
+  if (!files.length) return;
 
-  if (file.size > MAX_FILE_MB * 1024 * 1024) {
-    showToast('Fichier trop lourd (max ' + MAX_FILE_MB + ' Mo)', 'error');
-    input.value = '';
+  var pending = files.length;
+  files.forEach(function(file) {
+    if (file.size > MAX_FILE_MB * 1024 * 1024) {
+      showToast('Fichier trop lourd (max ' + MAX_FILE_MB + ' Mo) : ' + file.name, 'error');
+      pending--;
+      return;
+    }
+    /* Éviter doublons */
+    if (appState.docFiles.find(function(f){ return f.name === file.name && f.size === file.size; })) {
+      pending--;
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var b64 = e.target.result.split(',')[1];
+      appState.docFiles.push({name: file.name, size: file.size, b64: b64, type: file.type});
+      pending--;
+      if (pending <= 0) {
+        renderDocFiles();
+        updateSummary();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = ''; /* reset pour permettre re-sélection */
+}
+
+function renderDocFiles() {
+  var zone = document.getElementById('docUploadZone');
+  var box  = document.getElementById('method-document');
+  if (!appState.docFiles.length) {
+    zone.classList.remove('has-file');
+    zone.innerHTML = '<div class="upload-icon">📂</div>'
+      + '<div class="upload-text">Cliquer pour sélectionner</div>'
+      + '<div class="upload-sub">PDF, Excel, DWG — max 3 Mo par fichier · plusieurs fichiers acceptés</div>';
+    if (box) box.classList.remove('has-content');
     return;
   }
+  zone.classList.add('has-file');
+  var listHtml = appState.docFiles.map(function(f, i) {
+    return '<div style="display:flex;align-items:center;gap:.4rem;margin:.2rem 0">'
+      + '<span style="font-size:.78rem;flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📄 ' + f.name + '</span>'
+      + '<span style="font-size:.72rem;color:var(--text3);flex-shrink:0">' + (f.size/1024).toFixed(0) + ' Ko</span>'
+      + '<span onclick="removeDoc('+i+')" style="cursor:pointer;color:var(--red);font-size:.8rem;padding:0 .25rem;flex-shrink:0" title="Supprimer">✕</span>'
+      + '</div>';
+  }).join('');
+  zone.innerHTML = '<div class="upload-icon">📎</div>'
+    + '<div style="font-size:.82rem;font-weight:600;margin-bottom:.4rem">'
+    + appState.docFiles.length + ' fichier' + (appState.docFiles.length > 1 ? 's joints' : ' joint')
+    + '</div>'
+    + '<div style="width:100%;font-size:.8rem">' + listHtml + '</div>'
+    + '<div style="font-size:.73rem;color:var(--text3);margin-top:.4rem">Cliquer pour ajouter d'autres fichiers</div>';
+  if (box) box.classList.add('has-content');
+  showToast(appState.docFiles.length + ' fichier' + (appState.docFiles.length > 1 ? 's joints' : ' joint'));
+}
 
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var b64 = e.target.result.split(',')[1];
-    appState.docFile = {name: file.name, size: file.size, b64: b64, type: file.type};
-
-    var zone = document.getElementById('docUploadZone');
-    zone.classList.add('has-file');
-    zone.innerHTML = '<div class="upload-icon">📄</div>'
-      + '<div class="upload-text">' + file.name + '</div>'
-      + '<div class="file-chip">✓ Fichier joint · ' + (file.size / 1024).toFixed(0) + ' Ko</div>';
-
-    var box = document.getElementById('method-document');
-    if (box) box.classList.add('has-content');
-    updateSummary();
-    showToast('Document joint : ' + file.name);
-  };
-  reader.readAsDataURL(file);
+function removeDoc(idx) {
+  appState.docFiles.splice(idx, 1);
+  renderDocFiles();
+  updateSummary();
 }
 
 /* ============================================================
@@ -729,7 +766,7 @@ function handleDocUpload(input) {
    ============================================================ */
 function validateSection2() {
   var hasArticles = appState.articles.length > 0;
-  var hasDoc      = !!appState.docFile;
+  var hasDoc      = appState.docFiles.length > 0;
 
   if (!hasArticles && !hasDoc) {
     var err = document.getElementById('articles-error');
@@ -774,12 +811,9 @@ function submitDevis() {
     dateEnvoi:    new Date().toISOString(),
     remarques:    document.getElementById('f-commentaire').value.trim(),
     articles:     appState.articles,
-    fichiers:     appState.docFile ? [{
-      name:   appState.docFile.name,
-      type:   appState.docFile.type,
-      size:   appState.docFile.size,
-      base64: appState.docFile.b64
-    }] : []
+    fichiers:     appState.docFiles.map(function(f) {
+      return {name: f.name, type: f.type, size: f.size, base64: f.b64};
+    })
   });
 
   fetch(FLOW_URL_DEVIS, {
@@ -833,9 +867,15 @@ function updateSummary() {
     : '<div class="summary-empty">Aucun article</div>';
 
   var sd = document.getElementById('sum-document');
-  if (sd) sd.innerHTML = appState.docFile
-    ? '<span class="doc-chip">📄 ' + appState.docFile.name + '</span>'
-    : '<div class="summary-empty">Aucun document</div>';
+  if (sd) {
+    if (appState.docFiles.length === 0) {
+      sd.innerHTML = '<div class="summary-empty">Aucun document</div>';
+    } else if (appState.docFiles.length === 1) {
+      sd.innerHTML = '<span class="doc-chip">📄 ' + appState.docFiles[0].name + '</span>';
+    } else {
+      sd.innerHTML = '<span class="doc-chip">📎 ' + appState.docFiles.length + ' fichiers joints</span>';
+    }
+  }
 }
 
 function updateDots() {
