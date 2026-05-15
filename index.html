@@ -627,7 +627,7 @@ function renderLignes() {
     return '<tr>'
       + '<td class="ligne-ref">' + a.ref + '</td>'
       + '<td style="font-size:.82rem">' + a.designation + '</td>'
-      + '<td><input class="qty-input" type="number" min="1" value="' + a.qty + '" data-idx="' + i + '"></td>'
+      + '<td><input class="qty-input" type="number" min="1" value="' + (a.quantite || 1) + '" data-idx="' + i + '"></td>'
       + '<td><button class="del-btn" data-idx="' + i + '">✕</button></td>'
       + '</tr>';
   }).join('');
