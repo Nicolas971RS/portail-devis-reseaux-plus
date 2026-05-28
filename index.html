@@ -754,7 +754,7 @@ function submitDevis() {
     chantier:     document.getElementById('f-chantier').value.trim(),
     dateEnvoi:    new Date().toISOString(),  
     ref_interne:  document.getElementById('f-ref') ? document.getElementById('f-ref').value.trim() : '',
-    remarques:    document.getElementById('f-commentaire').value.trim(),
+    Commentaires_Client: document.getElementById('f-commentaire').value.trim(),
     articles:     appState.articles,
     fichiers:     appState.docFiles.map(function(f) {
       return {name: f.name, type: f.type, size: f.size, base64: f.b64};
