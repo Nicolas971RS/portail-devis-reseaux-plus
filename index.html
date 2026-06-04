@@ -754,8 +754,7 @@ function submitDevis() {
     chantier:     document.getElementById('f-chantier').value.trim(),
     dateEnvoi:    new Date().toISOString(),  
     ref_interne:  document.getElementById('f-ref') ? document.getElementById('f-ref').value.trim() : '',
-    Commentaires_Client: (function(){ var c = document.getElementById('f-commentaire').value.trim(); var d = document.getElementById('f-doc-desc').value.trim(); return d ? c + (c ? '
-' : '') + '[Document joint] ' + d : c; })(),
+    Commentaires_Client: (function(){ var c = document.getElementById('f-commentaire').value.trim(); var d = document.getElementById('f-doc-desc').value.trim(); return d ? (c ? c + ' | ' + d : d) : c; })(),
     articles:     appState.articles,
     fichiers:     appState.docFiles.map(function(f) {
       return {name: f.name, type: f.type, size: f.size, base64: f.b64};
