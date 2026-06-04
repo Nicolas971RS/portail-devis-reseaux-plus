@@ -192,10 +192,6 @@ textarea.form-input{resize:vertical;min-height:72px}
             <label class="form-label">Nom du chantier <span class="req">*</span></label>
             <input class="form-input" id="f-chantier" type="text" placeholder="Ex : ZAC Jarry – Réseau EP Lot 2">
           </div>
-          <div class="form-group" style="margin-bottom:.9rem">
-            <label class="form-label">Référence interne <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--text3)">(optionnel)</span></label>
-            <input class="form-input" id="f-ref" type="text" placeholder="Ex : appel d'offres, code projet, remarques internes…">
-          </div>
           <button class="validate-btn" id="btn-sec1">Valider et continuer →</button>
         </div>
       </div>
@@ -284,13 +280,6 @@ textarea.form-input{resize:vertical;min-height:72px}
       </div>
       <div class="section-body">
         <div class="section-inner">
-          <div class="form-group" style="margin-bottom:.9rem">
-            <label class="form-label">Commentaires / précisions techniques</label>
-            <textarea class="form-input" id="f-commentaire" placeholder="Marque souhaitée, conditions de livraison, contraintes de chantier, délais impératifs…" oninput="updateSummary()"></textarea>
-          </div>
-          <div style="background:var(--amber2);border-radius:var(--radius);padding:.75rem 1rem;font-size:.82rem;color:#5d4037;line-height:1.6;margin-bottom:1rem">
-            ⏱ Votre devis vous sera envoyé par email sous <strong>24 à 48h ouvrées</strong>. Un email de confirmation avec votre numéro de référence vous sera transmis dès réception.
-          </div>
           <button class="submit-btn" id="submitBtn">Envoyer ma demande de devis →</button>
           <div class="submit-info">Un email de confirmation sera envoyé à l'adresse indiquée à l'étape 1.</div>
         </div>
@@ -420,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   
-  ['f-societe','f-contact','f-email','f-tel','f-chantier','f-ref'].forEach(function(id) {
+  ['f-societe','f-contact','f-email','f-tel','f-chantier'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener('input', function() {
       if (id === 'f-email') liveValidate(el);
@@ -752,8 +741,7 @@ function submitDevis() {
     email:        document.getElementById('f-email').value.trim(),
     telephone:    document.getElementById('f-tel').value.trim(),
     chantier:     document.getElementById('f-chantier').value.trim(),
-    dateEnvoi:    new Date().toISOString(),  
-    ref_interne:  document.getElementById('f-ref') ? document.getElementById('f-ref').value.trim() : '',
+    dateEnvoi:    new Date().toISOString(),
     Commentaires_Client: (function(){ var c = document.getElementById('f-commentaire').value.trim(); var d = document.getElementById('f-doc-desc').value.trim(); return d ? (c ? c + ' | ' + d : d) : c; })(),
     articles:     appState.articles,
     fichiers:     appState.docFiles.map(function(f) {
