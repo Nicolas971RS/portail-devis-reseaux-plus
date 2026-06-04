@@ -193,7 +193,7 @@ textarea.form-input{resize:vertical;min-height:72px}
             <input class="form-input" id="f-chantier" type="text" placeholder="Ex : ZAC Jarry – Réseau EP Lot 2">
           </div>
           <div class="form-group" style="margin-bottom:.9rem">
-            <label class="form-label">Commentaire <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--text3)">(optionnel)</span></label>
+            <label class="form-label">Référence interne <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--text3)">(optionnel)</span></label>
             <input class="form-input" id="f-ref" type="text" placeholder="Ex : appel d'offres, code projet, remarques internes…">
           </div>
           <button class="validate-btn" id="btn-sec1">Valider et continuer →</button>
@@ -754,7 +754,8 @@ function submitDevis() {
     chantier:     document.getElementById('f-chantier').value.trim(),
     dateEnvoi:    new Date().toISOString(),  
     ref_interne:  document.getElementById('f-ref') ? document.getElementById('f-ref').value.trim() : '',
-    Commentaires_Client: document.getElementById('f-commentaire').value.trim(),
+    Commentaires_Client: (function(){ var c = document.getElementById('f-commentaire').value.trim(); var d = document.getElementById('f-doc-desc').value.trim(); return d ? c + (c ? '
+' : '') + '[Document joint] ' + d : c; })(),
     articles:     appState.articles,
     fichiers:     appState.docFiles.map(function(f) {
       return {name: f.name, type: f.type, size: f.size, base64: f.b64};
