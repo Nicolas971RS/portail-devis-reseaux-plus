@@ -280,6 +280,13 @@ textarea.form-input{resize:vertical;min-height:72px}
       </div>
       <div class="section-body">
         <div class="section-inner">
+          <div class="form-group" style="margin-bottom:.9rem">
+            <label class="form-label">Commentaires / précisions techniques</label>
+            <textarea class="form-input" id="f-commentaire" placeholder="Marque souhaitée, conditions de livraison, contraintes de chantier, délais impératifs…" oninput="updateSummary()"></textarea>
+          </div>
+          <div style="background:var(--amber2);border-radius:var(--radius);padding:.75rem 1rem;font-size:.82rem;color:#5d4037;line-height:1.6;margin-bottom:1rem">
+            ⏱ Votre devis vous sera envoyé par email sous <strong>24 à 48h ouvrées</strong>. Un email de confirmation avec votre numéro de référence vous sera transmis dès réception.
+          </div>
           <button class="submit-btn" id="submitBtn">Envoyer ma demande de devis →</button>
           <div class="submit-info">Un email de confirmation sera envoyé à l'adresse indiquée à l'étape 1.</div>
         </div>
